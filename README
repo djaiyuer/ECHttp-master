@@ -1,0 +1,25 @@
+ECHttp是基于Retrofit网络引擎进行第二次封装的一个网络框架
+/************************************************************************************/
+1、如何通过注解为单个请求添加header请求头
+    @Headers({
+            "Accept-Encoding: gzip, deflate",
+            "Content-Type: application/json;charset=utf-8",
+            "Accept: application/json"
+    })
+    @GET("iplookup/iplookup.php?format=js")
+    Call<ResponseBody> ipAddess(@Query("ip") String ip);
+
+
+
+/************************************************************************************/
+2、代码动态添加header请求头
+    okHttpClient.addInterceptor(new Interceptor() {
+        @Override
+        public Response intercept(Chain chain) throws IOException, java.io.IOException {
+            Request request = chain.request().newBuilder()
+                    .addHeader("Source", "android")
+                    .addHeader("Accept", "application/json,text/javascript,*/*")
+                    .build();
+            return chain.proceed(request);
+        }
+    });
