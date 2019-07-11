@@ -129,7 +129,7 @@ public class HttpEngineImple implements IHttpEngine {
 
         /**
          * 添加拦截器
-         * @param interceptor
+         * @param interceptors
          * @return
          */
         public Builder addInterceptors(List<BaseInterceptor> interceptors){

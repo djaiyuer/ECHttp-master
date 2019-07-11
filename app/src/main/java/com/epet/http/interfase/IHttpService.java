@@ -51,7 +51,6 @@ public interface IHttpService {
 
     /**
      * 下载
-     * @param start  @head标签是指定下载的起始位置（断点续传的位置）
      * @param url
      * @return
      */
