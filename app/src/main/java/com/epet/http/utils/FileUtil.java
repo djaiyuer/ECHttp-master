@@ -29,8 +29,9 @@ public class FileUtil {
      * 获得下载保存默认地址
      */
     public static String getDefaultDownLoadPath(Context context) {
-        if (checkSDStatus())
+        if (checkSDStatus()){
             return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()+ File.separator;
+        }
         return context.getFilesDir().getAbsolutePath();
     }
 
@@ -39,7 +40,9 @@ public class FileUtil {
      * 从url中，获得默认文件名
      */
     public static String getDefaultDownLoadFileName(String url) {
-        if (url == null || url.length() == 0) return "";
+        if (url == null || url.length() == 0) {
+            return "";
+        }
         int nameStart = url.lastIndexOf('/')+1;
         return url.substring(nameStart);
     }

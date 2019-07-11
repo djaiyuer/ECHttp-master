@@ -7,18 +7,35 @@ package com.epet.http.interfase;
  */
 
 public interface IHttpEngine {
-    // GET 需要支持缓存策略
-    public void httpGet();
-    // POST
-    public void httpPost();
-    // PUT
-    public void httpPut();
-    // DELETE
-    public void httpDelete();
+    /**
+     *  GET 需要支持缓存策略
+     */
+    void httpGet();
 
-    public void upload();
+    /**
+     * POST
+     */
+    void httpPost();
 
-    public void download();
+    /**
+     * PUT
+     */
+    void httpPut();
+
+    /**
+     * DELETE
+     */
+    void httpDelete();
+
+    /**
+     * 上传
+     */
+    void upload();
+
+    /**
+     * 下载
+     */
+    void download();
 
 
 }

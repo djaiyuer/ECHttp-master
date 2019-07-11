@@ -27,17 +27,16 @@ public class IHttpEngineFactory {
      * @return
      */
     private static IHttpEngine retrofitHttpFrame(ECHttpClient.Builder builder){
-        HttpEngineImple httpEngineImple= new RetrofitHttpEngine.Builder()
-                .setBaseUrl(builder.getmBaseUrl())
-                .setUrl(builder.getmUrl())
-                .setParam(builder.getmParams())
-                .setConext(builder.getContext())
+        IHttpEngine httpEngine= new RetrofitHttpEngine.Builder()
+                .setBaseUrl(builder.getBaseUrl())
+                .setUrl(builder.getUrl())
+                .setParam(builder.getParams())
                 .setFileKey(builder.getFileKey())
                 .setFileList(builder.getFiles())
                 .setSaveFilePath(builder.getSaveFilePath())
                 .setSaveFileName(builder.getSaveFileName())
-                .setOnResultListener(builder.getmListener())
+                .setOnResultListener(builder.getListener())
                 .builder();
-        return httpEngineImple;
+        return httpEngine;
     }
 }

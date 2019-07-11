@@ -1,7 +1,5 @@
 package com.epet.http.imple;
 
-import android.content.Context;
-import android.util.Log;
 
 import com.epet.http.OnResultListener;
 import com.epet.http.engine.RetrofitHttpEngine;
@@ -18,15 +16,16 @@ import java.util.HashMap;
 
 public class HttpEngineImple implements IHttpEngine {
     public HttpEngineImple.Builder mBuidler;
-    private Context mConext;
-    public HttpEngineImple(){}
+
+    public HttpEngineImple(){
+
+    }
     public HttpEngineImple(HttpEngineImple.Builder builder) {
         this.mBuidler = builder;
-        this.mConext = builder.mConext;
     }
     @Override
     public void httpGet() {
-        Log.d(HttpEngineImple.class.getSimpleName(),"执行的我");
+
     }
 
     @Override
@@ -55,19 +54,30 @@ public class HttpEngineImple implements IHttpEngine {
     }
 
     public static class Builder {
-        //域
+        /**
+         * 域
+         */
         private String mBaseUrl;
-        //请求接口
+        /**
+         * 请求接口
+         */
         private String mUrl;
-        //参数集合
+        /**
+         * 参数集合
+         */
         private HashMap<String, String> mParam = new HashMap<>();
-        //上传文件参数名
+        /**
+         * 上传文件参数名
+         */
         private String mFileKey;
-        //文件列表
+        /**
+         * 文件列表
+         */
         private ArrayList<File> mFiles;
-        //请求回执接口
+        /**
+         * 请求回执接口
+         */
         private OnResultListener mListener;
-        private Context mConext;
         private DownInfoEntity mDownLoadInfo;
         public HttpEngineImple.Builder setBaseUrl(String baseUrl) {
             this.mBaseUrl = baseUrl;
@@ -81,8 +91,9 @@ public class HttpEngineImple implements IHttpEngine {
 
         public HttpEngineImple.Builder setParam(HashMap<String, String> param) {
             mParam.clear();
-            if (param != null)
+            if (param != null){
                 mParam.putAll(param);
+            }
             return this;
         }
 
@@ -93,13 +104,6 @@ public class HttpEngineImple implements IHttpEngine {
 
         public HttpEngineImple.Builder setFileList(ArrayList<File> files){
             this.mFiles = files;
-            return this;
-        }
-
-
-
-        public HttpEngineImple.Builder setConext(Context conext) {
-            this.mConext = conext;
             return this;
         }
 
@@ -117,10 +121,6 @@ public class HttpEngineImple implements IHttpEngine {
             createDownInfoEntity();
             this.mDownLoadInfo.setSaveFileName(fileName);
             return this;
-        }
-
-        public Context getConext() {
-            return mConext;
         }
 
         public String getBaseUrl() {
@@ -157,7 +157,9 @@ public class HttpEngineImple implements IHttpEngine {
             }
         }
 
-        //这里动态返回子类对象进行框架的切换
+        /**
+         * 这里动态返回子类对象进行框架的切换
+         */
         public HttpEngineImple builder() {
             return new RetrofitHttpEngine(this);
         }

@@ -12,6 +12,7 @@ import com.epet.http.listener.ProgressListener;
 import com.epet.http.body.ProgressRequestBody;
 import com.epet.http.observer.HttpDownLoadObServer;
 import com.epet.http.observer.HttpGeneralObServer;
+import com.epet.http.utils.Applications;
 import com.epet.http.utils.FileUtil;
 import com.epet.http.utils.okhttps.OkHttpClientUtils;
 
@@ -49,7 +50,7 @@ public class RetrofitHttpEngine extends HttpEngineImple {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(builder.getBaseUrl())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .client(OkHttpClientUtils.createOkHttpCilentBuilder(mBuidler).build())
+                .client(OkHttpClientUtils.newInstance().createOkHttpCilentBuilder(builder))
                 .build();
         mIhttpService = retrofit.create(IHttpService.class);
     }
@@ -78,7 +79,7 @@ public class RetrofitHttpEngine extends HttpEngineImple {
         super.upload();
         request( mIhttpService.upload(getUrl(),filesToMultipartBodyParts()));
     }
-
+    @Override
     public void download(){
         final DownInfoEntity info = mBuidler.getDownLoadInfo();
         HttpDownLoadObServer observer = new HttpDownLoadObServer(mBuidler);
@@ -92,7 +93,7 @@ public class RetrofitHttpEngine extends HttpEngineImple {
                             String filePath = info.getSavePath();
                             String fileName = info.getSaveFileName();
                             if(TextUtils.isEmpty(filePath)){
-                                filePath = FileUtil.getDefaultDownLoadPath(mBuidler.getConext());
+                                filePath = FileUtil.getDefaultDownLoadPath(Applications.context());
                                 info.setSavePath(filePath);
                             }
                             if(TextUtils.isEmpty(fileName)){
@@ -140,7 +141,9 @@ public class RetrofitHttpEngine extends HttpEngineImple {
     public  List<MultipartBody.Part> filesToMultipartBodyParts() {
         ArrayList<File> files = mBuidler.getFiles();
         final OnResultListener listener = mBuidler.getListener();
-        if(files==null || files.isEmpty()) return new ArrayList<>();
+        if(files==null || files.isEmpty()){
+            return new ArrayList<>();
+        }
         List<MultipartBody.Part> parts = new ArrayList<>(files.size());
         for (File file : files) {
             RequestBody requestBody=RequestBody.create(MediaType.parse("multipart/form-data"),file);
@@ -175,11 +178,11 @@ public class RetrofitHttpEngine extends HttpEngineImple {
             FileChannel channelOut = null;
             InputStream inputStream = null;
             try {
-                if (!file.getParentFile().exists())
+                if (!file.getParentFile().exists()){
                     file.getParentFile().mkdirs();
+                }
                 long allLength = 0 == info.getTotalLength() ? responseBody.contentLength() : info.getReadLength() + responseBody
                         .contentLength();
-
                 inputStream = responseBody.byteStream();
                 randomAccessFile = new RandomAccessFile(file, "rwd");
                 channelOut = randomAccessFile.getChannel();

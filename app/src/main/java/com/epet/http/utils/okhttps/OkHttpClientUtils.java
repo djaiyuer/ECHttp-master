@@ -10,10 +10,8 @@ import com.epet.http.https.SslSocketFactory;
 import com.epet.http.imple.HttpEngineImple;
 import com.epet.http.interceptor.CacheInterceptor;
 import com.epet.http.interceptor.DownloadInterceptor;
-import com.epet.http.interceptor.GzipRequestInterceptor;
 import com.epet.http.interceptor.LoggingInterceptor;
 import com.epet.http.listener.DownLoadingProgressListener;
-import com.epet.http.utils.HttpLogger;
 import com.epet.http.interceptor.NetworkInterceptor;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 
@@ -26,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
 import okhttp3.internal.http.BridgeInterceptor;
-import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
  * okhttp帮助类
@@ -35,53 +32,68 @@ import okhttp3.logging.HttpLoggingInterceptor;
  */
 
 public class OkHttpClientUtils {
+    private static OkHttpClientUtils mOkHttpClientUtils;
+    private OkHttpClient mOkHttpClient;
+    private OkHttpClient.Builder mOkHttpClientBuilder;
+    /**
+     * 单例模式
+     * @return OkHttpClientUtils
+     */
+    public static OkHttpClientUtils newInstance() {
+        return InstanceHolder.okHttpClientUtils;
+    }
     /**
      * 创建okhttpclient的builder
      * @return
      */
-    public static OkHttpClient.Builder createOkHttpCilentBuilder(HttpEngineImple.Builder mBuidler){
-        //缓存拦截器
-        CacheInterceptor cacheInterceptor  = new CacheInterceptor(mBuidler.getConext());
-        //自定义OkHttpClient
-        OkHttpClient.Builder okHttpClient = new OkHttpClient.Builder()
-                //失败重连
-                .retryOnConnectionFailure(true)
-                //超时时间
-                .connectTimeout(HttpFrameConfig.TIMEOUT_CONNECTION, TimeUnit.SECONDS)
-                //读取时间
-                .readTimeout(HttpFrameConfig.TIMEOUT_READ, TimeUnit.SECONDS)
-                //写入时间
-                .writeTimeout(HttpFrameConfig.TIMEOUT_WRITE,TimeUnit.SECONDS)
-                //缓存拦截器
-                .addInterceptor(cacheInterceptor)
-                .cache(cacheInterceptor.mCache)
-                //网络拦截器
-                .addInterceptor(new NetworkInterceptor(mBuidler.getConext()))
-                .addNetworkInterceptor(new NetworkInterceptor(mBuidler.getConext()))
-                //chrome工具调试的中间件
-                .addNetworkInterceptor(new StethoInterceptor());
-        // https支持
-        okHttpClient.addInterceptor(new BridgeInterceptor(setCookies(mBuidler)));
-        //日志拦截
-        addLoggingInterceptor(okHttpClient);
+    public OkHttpClient createOkHttpCilentBuilder(HttpEngineImple.Builder buidler){
+        if(mOkHttpClient == null){
+            //缓存拦截器
+            CacheInterceptor cacheInterceptor  = new CacheInterceptor(buidler.getConext());
+            //自定义OkHttpClient
+            mOkHttpClientBuilder = new OkHttpClient.Builder()
+                    //失败重连
+                    .retryOnConnectionFailure(false)
+                    //超时时间
+                    .connectTimeout(HttpFrameConfig.TIMEOUT_CONNECTION, TimeUnit.SECONDS)
+                    //读取时间
+                    .readTimeout(HttpFrameConfig.TIMEOUT_READ, TimeUnit.SECONDS)
+                    //写入时间
+                    .writeTimeout(HttpFrameConfig.TIMEOUT_WRITE,TimeUnit.SECONDS)
+                    //缓存拦截器
+                    .addInterceptor(cacheInterceptor)
+                    .cache(cacheInterceptor.mCache)
+                    //网络拦截器
+                    .addInterceptor(new NetworkInterceptor(buidler.getConext()))
+                    .addNetworkInterceptor(new NetworkInterceptor(buidler.getConext()))
+                    //chrome工具调试的中间件
+                    .addNetworkInterceptor(new StethoInterceptor());
+            // https支持
+            mOkHttpClientBuilder.addInterceptor(new BridgeInterceptor(setCookies(buidler)));
+            //日志拦截
+            addLoggingInterceptor(mOkHttpClientBuilder);
+            //同步cookie
+            //setCookies(okHttpClient, mBuidler);
+            //设置证书
+            setSslSocketFactory(mOkHttpClientBuilder, buidler);
+            mOkHttpClient = mOkHttpClientBuilder.build();
+        }
         //添加下载进度拦截
-        addDownLoadInterceptor(okHttpClient,mBuidler);
-        //同步cookie
-        //setCookies(okHttpClient, mBuidler);
-        //设置证书
-        setSslSocketFactory(okHttpClient, mBuidler);
-
-        return okHttpClient;
+        DownInfoEntity downInfoEntity = buidler.getDownLoadInfo();
+        if(downInfoEntity != null && !TextUtils.isEmpty(downInfoEntity.getSavePath())){
+            addDownLoadInterceptor(mOkHttpClientBuilder,buidler);
+        }
+        return mOkHttpClient;
     }
 
     /**
      * 设置cookie
      * @param mBuidler
      */
-    private static JavaNetCookieJar setCookies(HttpEngineImple.Builder mBuidler) {
+    private  JavaNetCookieJar setCookies(HttpEngineImple.Builder mBuidler) {
         CookieManager cookieManager = new java.net.CookieManager(new InDiskCookieStore(mBuidler.getConext()), CookiePolicy.ACCEPT_ALL);
         JavaNetCookieJar javaNetCookieJar =  new JavaNetCookieJar(cookieManager);
-//        builder.cookieJar(javaNetCookieJar);
+        // builder.cookieJar(javaNetCookieJar);
         return javaNetCookieJar;
     }
 
@@ -89,15 +101,19 @@ public class OkHttpClientUtils {
      * 设置https证书
      * @param builder
      */
-    private static void setSslSocketFactory(OkHttpClient.Builder builder,HttpEngineImple.Builder mBuidler){
+    private  void setSslSocketFactory(OkHttpClient.Builder builder,HttpEngineImple.Builder mBuidler){
         try {
             HashMap<String,String> certificates = HttpFrameConfig.httpsCertificateMaps;
             String baseUrl = mBuidler.getBaseUrl();
             if(certificates.containsKey(baseUrl)){
                 String certificatePath = certificates.get(baseUrl);
-                if(TextUtils.isEmpty(certificatePath))return;
+                if(TextUtils.isEmpty(certificatePath)){
+                    return;
+                }
                 InputStream inputStream = mBuidler.getConext().getApplicationContext().getAssets().open(certificatePath);
-                if(inputStream==null)return;
+                if(inputStream==null){
+                    return;
+                }
                 builder.sslSocketFactory(SslSocketFactory.getSSLSocketFactory(inputStream));
             }
         }catch (Exception e){
@@ -109,34 +125,40 @@ public class OkHttpClientUtils {
     /**
      * 添加日志拦截器
      */
-    private static  void addLoggingInterceptor(OkHttpClient.Builder okHttpClient){
+    private void addLoggingInterceptor(OkHttpClient.Builder okHttpClient){
         okHttpClient.addNetworkInterceptor(new LoggingInterceptor());
     }
 
     /**
      * 下载拦截器
      * @param okHttpClient
-     * @param mBuidler
+     * @param buidler
      */
-    private static void addDownLoadInterceptor(OkHttpClient.Builder okHttpClient,final HttpEngineImple.Builder mBuidler){
+    private void addDownLoadInterceptor(OkHttpClient.Builder okHttpClient,final HttpEngineImple.Builder buidler){
         okHttpClient.addNetworkInterceptor(new DownloadInterceptor(new DownLoadingProgressListener() {
             @Override
             public void onProgress(long writtenBytesCount, long totalBytesCount, boolean isFinish) {
-                DownInfoEntity downInfo = mBuidler.getDownLoadInfo();
-                if(downInfo.getTotalLength()>writtenBytesCount){
-                    writtenBytesCount=downInfo.getTotalLength()-totalBytesCount+writtenBytesCount;
+                DownInfoEntity downInfo = buidler.getDownLoadInfo();
+                if(downInfo.getTotalLength() > writtenBytesCount){
+                    writtenBytesCount = downInfo.getTotalLength() - totalBytesCount + writtenBytesCount;
                 }else{
                     downInfo.setTotalLength(totalBytesCount);
                 }
                 downInfo.setReadLength(writtenBytesCount);
-                OnResultListener listener = mBuidler.getListener();
-                if(listener==null)return;
+                OnResultListener listener = buidler.getListener();
+                if(listener == null){
+                    return;
+                }
                 if(isFinish){
-                    listener.downLoadComplate(mBuidler.getDownLoadInfo().getSavePath()+mBuidler.getDownLoadInfo().getSaveFileName());
+                    listener.downLoadComplate(buidler.getDownLoadInfo().getSavePath() + buidler.getDownLoadInfo().getSaveFileName());
                 }else{
                     listener.downLoadProgress(writtenBytesCount,totalBytesCount);
                 }
             }
         }));
+    }
+
+    private static class InstanceHolder{
+        private static final OkHttpClientUtils okHttpClientUtils = new OkHttpClientUtils();
     }
 }

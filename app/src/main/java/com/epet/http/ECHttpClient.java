@@ -16,54 +16,63 @@ import java.util.HashMap;
  */
 
 public class ECHttpClient {
-    //构建对象
+    /**
+     * 构建对象
+     */
     private Builder mBuilder;
 
     private IHttpEngine mHttpEngine;
-
-    private Context mContext;
     /**
      * 构造函数
      * @param builder
      */
     private ECHttpClient(Builder builder){
         this.mBuilder = builder;
-        mHttpEngine = IHttpEngineFactory.createHttpEngine(mBuilder);
+        this.mHttpEngine = IHttpEngineFactory.createHttpEngine(mBuilder);
     }
     public void httpGet() {
-        mHttpEngine.httpGet();
+        this.mHttpEngine.httpGet();
     }
     public void httpPost() {
-        mHttpEngine.httpPost();
+        this.mHttpEngine.httpPost();
     }
     public void httpPut() {
-        mHttpEngine.httpPut();
+        this.mHttpEngine.httpPut();
     }
     public void httpDelete() {
-        mHttpEngine.httpDelete();
+        this.mHttpEngine.httpDelete();
     }
     public void upload(){
-        mHttpEngine.upload();
+        this.mHttpEngine.upload();
     }
     public void downLoad(){
-        mHttpEngine.download();
+        this.mHttpEngine.download();
     }
     /**
      * 构建者：用于构建ECHttpClient对象
      */
     public static class Builder{
-        //网络请求的域：改属性需要支持动态设置，根据不同的业务场景会有不同的域
+        /**
+         * 网络请求的域：改属性需要支持动态设置，根据不同的业务场景会有不同的域
+         */
         private String mBaseUrl;
-        //接口地址
+        /**
+         * 接口地址
+         */
         private String mUrl;
-        //上传文件参数名
+        /**
+         * 上传文件参数名
+         */
         private String mFileKey;
-        //文件列表
+        /**
+         * 文件列表
+         */
         private ArrayList<File> mFiles;
-        private Context mContext;
         private String mSaveFilePath;
         private String mSaveFileName;
-        //请求参数
+        /**
+         * 请求参数
+         */
         private HashMap<String , String> mParams = new HashMap<>();
         private OnResultListener mListener;
         public Builder(){
@@ -93,16 +102,12 @@ public class ECHttpClient {
          * @param value 参数值
          */
         public Builder setParam(String key , String value){
-            if(!mParams.containsKey(key)){
-                mParams.put(key,value);
+            if(!this.mParams.containsKey(key)){
+                this.mParams.put(key,value);
             }
             return this;
         }
 
-        public Builder setContext(Context mContext) {
-            this.mContext = mContext;
-            return this;
-        }
 
         /**
          *  设置参数 ：如果当参数过多时可以构建map参数集合进行请求
@@ -111,8 +116,8 @@ public class ECHttpClient {
          */
         public Builder setParam(HashMap<String , String> params){
             if(params!=null && !params.isEmpty()){
-                mParams.clear();
-                mParams.putAll(params);
+                this.mParams.clear();
+                this.mParams.putAll(params);
             }
             return this;
         }
@@ -142,11 +147,11 @@ public class ECHttpClient {
         }
 
         public String getSaveFilePath() {
-            return mSaveFilePath;
+            return this.mSaveFilePath;
         }
 
         public String getSaveFileName() {
-            return mSaveFileName;
+            return this.mSaveFileName;
         }
 
         /**
@@ -157,31 +162,27 @@ public class ECHttpClient {
             return new ECHttpClient(this);
         }
 
-        public String getmBaseUrl() {
-            return mBaseUrl;
+        public String getBaseUrl() {
+            return this.mBaseUrl;
         }
 
-        public String getmUrl() {
-            return mUrl;
+        public String getUrl() {
+            return this.mUrl;
         }
 
-        public Context getContext() {
-            return mContext;
-        }
-
-        public HashMap<String, String> getmParams() {
-            return mParams;
+        public HashMap<String, String> getParams() {
+            return this.mParams;
         }
 
         public ArrayList<File> getFiles() {
-            return mFiles;
+            return this.mFiles;
         }
 
         public String getFileKey() {
-            return mFileKey;
+            return this.mFileKey;
         }
-        public OnResultListener getmListener() {
-            return mListener;
+        public OnResultListener getListener() {
+            return this.mListener;
         }
     }
 }

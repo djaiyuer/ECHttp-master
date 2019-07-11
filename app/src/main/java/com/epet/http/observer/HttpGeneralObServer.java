@@ -28,24 +28,28 @@ public class HttpGeneralObServer implements Observer<ResponseBody> {
 
     @Override
     public void onNext(ResponseBody value) {
-        try {
-            if (mListener != null) {
+        if (mListener != null) {
+            try {
+                mListener.onSuccess(value);
                 mListener.onSuccess(value.string().toString());
+            }catch (IOException io){
+                io.printStackTrace();
+                mListener.onFailure(io);
             }
-        }catch (IOException io){
-            io.printStackTrace();
         }
     }
 
     @Override
     public void onError(Throwable e) {
         if (mListener != null) {
-            mListener.onFailure(e.getMessage());
+            mListener.onNetworkError(e);
         }
     }
 
     @Override
     public void onComplete() {
-
+        if (mListener != null) {
+            mListener.onFinish();
+        }
     }
 }
