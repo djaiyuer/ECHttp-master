@@ -18,35 +18,41 @@ import java.util.Enumeration;
 
 public class NetworkUtils {
 
-    //NetworkAvailable-网络连接可用
+    /**
+     * NetworkAvailable-网络连接可用
+     */
+
     private static final int NET_CONNECT_OK = 0;
 
-    //No Network ready
+    /**
+     * No Network ready
+     */
     private static final int NET_NO_PREPARE = 1;
 
-    //网络错误
+    /**
+     * 网络错误
+     */
     private static final int NET_ERROR = 2;
 
     /**
      * 检查网络是否可用
-     * @param context
      * @return true为可用  false为不可用
      */
-    public static boolean isNetWorkAvailable(Context context){
+    public static boolean isNetWorkAvailable(){
         boolean isAvailable = true;
-        int state = networkState(context);
-        if(NET_CONNECT_OK!=state)
+        int state = networkState();
+        if(NET_CONNECT_OK != state){
             isAvailable = false;
+        }
         return isAvailable;
     }
 
     /**
      * 当前网络状态
-     * @param context
      * @return
      */
-    public static int networkState(Context context){
-        ConnectivityManager netMananger = (ConnectivityManager)context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+    public static int networkState(){
+        ConnectivityManager netMananger = (ConnectivityManager)Applications.context().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = netMananger.getActiveNetworkInfo();
         if(networkInfo != null){
             if(networkInfo.isAvailable() && networkInfo.isConnected()){
@@ -82,11 +88,10 @@ public class NetworkUtils {
 
     /**
      * 当前网络是否为3G网络
-     * @param context
      * @return true 为3G
      */
-    public static boolean is3G(Context context){
-        ConnectivityManager netManager = (ConnectivityManager)context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+    public static boolean is3G(){
+        ConnectivityManager netManager = (ConnectivityManager)Applications.context().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = netManager.getActiveNetworkInfo();
         if(networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE){
             return true;
@@ -96,11 +101,10 @@ public class NetworkUtils {
 
     /**
      * 是否为wifi
-     * @param context
      * @return true 为wifi
      */
-    public static boolean isWifi(Context context){
-        ConnectivityManager netManager = (ConnectivityManager)context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+    public static boolean isWifi(){
+        ConnectivityManager netManager = (ConnectivityManager)Applications.context().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = netManager.getActiveNetworkInfo();
         if(networkInfo != null && networkInfo.getType()==ConnectivityManager.TYPE_WIFI){
             return true;
@@ -110,11 +114,10 @@ public class NetworkUtils {
 
     /**
      * 当前网络是否为2G
-     * @param context
      * @return true 为2G
      */
-    public static boolean is2G(Context context){
-        ConnectivityManager netManager = (ConnectivityManager)context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+    public static boolean is2G(){
+        ConnectivityManager netManager = (ConnectivityManager)Applications.context().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = netManager.getActiveNetworkInfo();
         if(networkInfo != null && (networkInfo.getSubtype() == TelephonyManager.NETWORK_TYPE_EDGE
                 || networkInfo.getSubtype() == TelephonyManager.NETWORK_TYPE_GPRS || networkInfo
@@ -127,14 +130,15 @@ public class NetworkUtils {
 
     /**
      * 当前wifi是否可用
-     * @param context
      * @return
      */
-    public static boolean isWifiEnable(Context context){
-        ConnectivityManager netManager = (ConnectivityManager)context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        TelephonyManager telManager = (TelephonyManager)context.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
+    public static boolean isWifiEnable(){
+        ConnectivityManager netManager = (ConnectivityManager)Applications.context().getSystemService(Context.CONNECTIVITY_SERVICE);
+        TelephonyManager telManager = (TelephonyManager)Applications.context().getSystemService(Context.TELEPHONY_SERVICE);
         NetworkInfo networkInfo = netManager.getActiveNetworkInfo();
-        if((networkInfo != null && networkInfo.getState() == NetworkInfo.State.CONNECTED) || telManager.getNetworkType() == TelephonyManager.NETWORK_TYPE_UMTS ){
+        boolean workInfo = (networkInfo != null && networkInfo.getState()  == NetworkInfo.State.CONNECTED);
+        boolean workType = telManager.getNetworkType() == TelephonyManager.NETWORK_TYPE_UMTS;
+        if(workInfo || workType){
             return true;
         }
         return false;

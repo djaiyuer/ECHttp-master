@@ -1,7 +1,6 @@
 package com.epet.http.utils;
 
 import com.epet.http.ECHttpClient;
-import com.epet.http.imple.HttpEngineImple;
 import com.epet.http.engine.RetrofitHttpEngine;
 import com.epet.http.interfase.IHttpEngine;
 
@@ -36,6 +35,7 @@ public class IHttpEngineFactory {
                 .setSaveFilePath(builder.getSaveFilePath())
                 .setSaveFileName(builder.getSaveFileName())
                 .setOnResultListener(builder.getListener())
+                .addInterceptors(builder.getInterceptors())
                 .builder();
         return httpEngine;
     }

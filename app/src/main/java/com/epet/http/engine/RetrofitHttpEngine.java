@@ -4,7 +4,6 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.epet.http.entity.DownInfoEntity;
-import com.epet.http.exception.HttpTimeException;
 import com.epet.http.imple.HttpEngineImple;
 import com.epet.http.interfase.IHttpService;
 import com.epet.http.OnResultListener;
@@ -52,43 +51,43 @@ public class RetrofitHttpEngine extends HttpEngineImple {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(OkHttpClientUtils.newInstance().createOkHttpCilentBuilder(builder))
                 .build();
-        mIhttpService = retrofit.create(IHttpService.class);
+        this.mIhttpService = retrofit.create(IHttpService.class);
     }
 
     @Override
     public void httpGet() {
-        request(mIhttpService.requestGet(getUrl(), mBuidler.getParam()));
+        request(this.mIhttpService.requestGet(getUrl(), this.mBuidler.getParam()));
     }
 
     @Override
     public void httpPost() {
-        request(mIhttpService.requestPost(getUrl(), mBuidler.getParam()));
+        request(this.mIhttpService.requestPost(getUrl(), this.mBuidler.getParam()));
     }
     @Override
     public void httpPut() {
-        request( mIhttpService.requestPut(getUrl(), mBuidler.getParam()));
+        request( this.mIhttpService.requestPut(getUrl(), this.mBuidler.getParam()));
     }
 
     @Override
     public void httpDelete() {
-        request( mIhttpService.requestDelete(getUrl(), mBuidler.getParam()));
+        request( this.mIhttpService.requestDelete(getUrl(), this.mBuidler.getParam()));
     }
 
     @Override
     public void upload() {
         super.upload();
-        request( mIhttpService.upload(getUrl(),filesToMultipartBodyParts()));
+        request( this.mIhttpService.upload(getUrl(),filesToMultipartBodyParts()));
     }
     @Override
     public void download(){
-        final DownInfoEntity info = mBuidler.getDownLoadInfo();
-        HttpDownLoadObServer observer = new HttpDownLoadObServer(mBuidler);
-        Observable<ResponseBody>  observable = mIhttpService.download(getUrl());
+        final DownInfoEntity info = this.mBuidler.getDownLoadInfo();
+        HttpDownLoadObServer observer = new HttpDownLoadObServer(this.mBuidler);
+        Observable<ResponseBody>  observable = this.mIhttpService.download(getUrl());
         observable.subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .map(new Function<ResponseBody, DownInfoEntity>() {
                     @Override
-                    public DownInfoEntity apply(ResponseBody responseBody) throws Exception {
+                    public DownInfoEntity apply(ResponseBody responseBody) {
                         try {
                             String filePath = info.getSavePath();
                             String fileName = info.getSaveFileName();
@@ -101,9 +100,9 @@ public class RetrofitHttpEngine extends HttpEngineImple {
                                 info.setSaveFileName(fileName);
                             }
                             writeCache(responseBody,new File(filePath,fileName),info);
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             /*失败抛出异常*/
-                            throw new HttpTimeException(e.getMessage());
+                            e.printStackTrace();
                         }
                         return info;
                     }
@@ -120,7 +119,7 @@ public class RetrofitHttpEngine extends HttpEngineImple {
      */
     private String getUrl(){
         StringBuffer sbf = new StringBuffer();
-        return sbf.append(mBuidler.getBaseUrl()).append(mBuidler.getUrl()).toString();
+        return sbf.append(this.mBuidler.getBaseUrl()).append(this.mBuidler.getUrl()).toString();
     }
 
     /**
@@ -147,7 +146,7 @@ public class RetrofitHttpEngine extends HttpEngineImple {
         List<MultipartBody.Part> parts = new ArrayList<>(files.size());
         for (File file : files) {
             RequestBody requestBody=RequestBody.create(MediaType.parse("multipart/form-data"),file);
-            MultipartBody.Part filePart= MultipartBody.Part.createFormData(mBuidler.getFileKey(), file.getName(), new ProgressRequestBody(requestBody,file.getPath(),
+            MultipartBody.Part filePart= MultipartBody.Part.createFormData(this.mBuidler.getFileKey(), file.getName(), new ProgressRequestBody(requestBody,file.getPath(),
                     new ProgressListener() {
                         @Override
                         public void onProgress(String filePath,long currentBytesCount, long totalBytesCount,boolean isFinish) {
@@ -172,7 +171,7 @@ public class RetrofitHttpEngine extends HttpEngineImple {
      * @param info
      * @throws IOException
      */
-    public void writeCache(ResponseBody responseBody,File file,DownInfoEntity info) throws IOException{
+    public void writeCache(ResponseBody responseBody,File file,DownInfoEntity info) {
         try {
             RandomAccessFile randomAccessFile = null;
             FileChannel channelOut = null;
@@ -194,7 +193,7 @@ public class RetrofitHttpEngine extends HttpEngineImple {
                     mappedBuffer.put(buffer, 0, len);
                 }
             } catch (IOException e) {
-                throw new HttpTimeException(e.getMessage());
+                e.printStackTrace();
             } finally {
                 if (inputStream != null) {
                     inputStream.close();
@@ -207,7 +206,7 @@ public class RetrofitHttpEngine extends HttpEngineImple {
                 }
             }
         } catch (IOException e) {
-            throw new HttpTimeException(e.getMessage());
+            e.printStackTrace();
         }
     }
 }

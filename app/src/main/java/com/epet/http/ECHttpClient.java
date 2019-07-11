@@ -2,12 +2,14 @@ package com.epet.http;
 
 import android.content.Context;
 
+import com.epet.http.interceptor.BaseInterceptor;
 import com.epet.http.utils.IHttpEngineFactory;
 import com.epet.http.interfase.IHttpEngine;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * 网络请求客户端
@@ -74,6 +76,7 @@ public class ECHttpClient {
          * 请求参数
          */
         private HashMap<String , String> mParams = new HashMap<>();
+        private List<BaseInterceptor> mInterceptors;
         private OnResultListener mListener;
         public Builder(){
 
@@ -108,6 +111,23 @@ public class ECHttpClient {
             return this;
         }
 
+        /**
+         * 添加拦截器
+         * @param interceptor
+         * @return
+         */
+        public Builder addInterceptors(BaseInterceptor interceptor){
+            if(this.mInterceptors == null){
+                this.mInterceptors = new ArrayList<>();
+            }
+            this.mInterceptors.add(interceptor);
+            return this;
+        }
+
+
+        public List<BaseInterceptor> getInterceptors() {
+            return mInterceptors;
+        }
 
         /**
          *  设置参数 ：如果当参数过多时可以构建map参数集合进行请求

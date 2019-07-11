@@ -4,11 +4,14 @@ package com.epet.http.imple;
 import com.epet.http.OnResultListener;
 import com.epet.http.engine.RetrofitHttpEngine;
 import com.epet.http.entity.DownInfoEntity;
+import com.epet.http.interceptor.BaseInterceptor;
 import com.epet.http.interfase.IHttpEngine;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 /**
  * 作者：yuer on 2017/8/18 17:20
  * 邮箱：heziyu222@163.com
@@ -79,6 +82,7 @@ public class HttpEngineImple implements IHttpEngine {
          */
         private OnResultListener mListener;
         private DownInfoEntity mDownLoadInfo;
+        private List<BaseInterceptor> mInterceptors;
         public HttpEngineImple.Builder setBaseUrl(String baseUrl) {
             this.mBaseUrl = baseUrl;
             return this;
@@ -121,6 +125,23 @@ public class HttpEngineImple implements IHttpEngine {
             createDownInfoEntity();
             this.mDownLoadInfo.setSaveFileName(fileName);
             return this;
+        }
+
+        /**
+         * 添加拦截器
+         * @param interceptor
+         * @return
+         */
+        public Builder addInterceptors(List<BaseInterceptor> interceptors){
+            if(this.mInterceptors == null){
+                this.mInterceptors = new ArrayList<>();
+            }
+            this.mInterceptors.addAll(interceptors);
+            return this;
+        }
+
+        public List<BaseInterceptor> getInterceptors() {
+            return mInterceptors;
         }
 
         public String getBaseUrl() {

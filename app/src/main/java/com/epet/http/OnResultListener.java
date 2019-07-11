@@ -8,10 +8,18 @@ package com.epet.http;
 
 public abstract class OnResultListener<T> {
     /**
-     * 网络异常回调接口
-     * @param e 异常
+     * 发起请求
      */
-    public void onNetworkError(Throwable e){
+    public void onRequestStart(){
+
+    }
+
+    /**
+     * 网络异常回调接口
+     * @param isNetWorkAvailable 网络是否可用
+     * @param e 异常提示
+     */
+    public void onNetworkError(boolean isNetWorkAvailable , String e){
 
     }
 
@@ -32,6 +40,15 @@ public abstract class OnResultListener<T> {
     }
 
     /**
+     * 成功回执-緩存
+     * @param result 对象
+     */
+    public void onCache(T result){
+
+    }
+
+
+    /**
      * 失败回执
      * @param message
      */
@@ -44,7 +61,7 @@ public abstract class OnResultListener<T> {
     /**
      * 请求完毕
      */
-    public void onFinish(){
+    public void onRequestFinish(){
 
     }
 

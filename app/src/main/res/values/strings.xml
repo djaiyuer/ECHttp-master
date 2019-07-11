@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">ECHttp-master</string>
+    <string name="network_socket_timeout">请求超时</string>
+    <string name="network_connect_timeout">网络连接超时</string>
+    <string name="network_sslhandshake_exception">安全证书异常</string>
+    <string name="network_unknownhost_exception">域名解析失败</string>
+    <string name="network_state_504_exception">网络异常，请检查您的网络状态</string>
+    <string name="network_state_404_exception">请求的地址不存在</string>
+    <string name="network_request_fail">请求失败</string>
+    <string name="network_state_fail">网络不可用，请检查网络连接！</string>
 </resources>

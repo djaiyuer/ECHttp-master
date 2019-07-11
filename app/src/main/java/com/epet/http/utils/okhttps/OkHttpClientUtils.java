@@ -8,18 +8,22 @@ import com.epet.http.cookie.InDiskCookieStore;
 import com.epet.http.entity.DownInfoEntity;
 import com.epet.http.https.SslSocketFactory;
 import com.epet.http.imple.HttpEngineImple;
+import com.epet.http.interceptor.BaseInterceptor;
 import com.epet.http.interceptor.CacheInterceptor;
 import com.epet.http.interceptor.DownloadInterceptor;
 import com.epet.http.interceptor.LoggingInterceptor;
 import com.epet.http.listener.DownLoadingProgressListener;
 import com.epet.http.interceptor.NetworkInterceptor;
+import com.epet.http.utils.Applications;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 
 import java.io.InputStream;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
@@ -32,7 +36,6 @@ import okhttp3.internal.http.BridgeInterceptor;
  */
 
 public class OkHttpClientUtils {
-    private static OkHttpClientUtils mOkHttpClientUtils;
     private OkHttpClient mOkHttpClient;
     private OkHttpClient.Builder mOkHttpClientBuilder;
     /**
@@ -47,11 +50,11 @@ public class OkHttpClientUtils {
      * @return
      */
     public OkHttpClient createOkHttpCilentBuilder(HttpEngineImple.Builder buidler){
-        if(mOkHttpClient == null){
+        if(this.mOkHttpClient == null){
             //缓存拦截器
-            CacheInterceptor cacheInterceptor  = new CacheInterceptor(buidler.getConext());
+            CacheInterceptor cacheInterceptor  = new CacheInterceptor();
             //自定义OkHttpClient
-            mOkHttpClientBuilder = new OkHttpClient.Builder()
+            this.mOkHttpClientBuilder = new OkHttpClient.Builder()
                     //失败重连
                     .retryOnConnectionFailure(false)
                     //超时时间
@@ -64,34 +67,39 @@ public class OkHttpClientUtils {
                     .addInterceptor(cacheInterceptor)
                     .cache(cacheInterceptor.mCache)
                     //网络拦截器
-                    .addInterceptor(new NetworkInterceptor(buidler.getConext()))
-                    .addNetworkInterceptor(new NetworkInterceptor(buidler.getConext()))
+                    .addInterceptor(new NetworkInterceptor())
+                    .addNetworkInterceptor(new NetworkInterceptor())
                     //chrome工具调试的中间件
                     .addNetworkInterceptor(new StethoInterceptor());
             // https支持
-            mOkHttpClientBuilder.addInterceptor(new BridgeInterceptor(setCookies(buidler)));
+            this.mOkHttpClientBuilder.addInterceptor(new BridgeInterceptor(setCookies()));
             //日志拦截
-            addLoggingInterceptor(mOkHttpClientBuilder);
+            addLoggingInterceptor(this.mOkHttpClientBuilder);
             //同步cookie
             //setCookies(okHttpClient, mBuidler);
             //设置证书
-            setSslSocketFactory(mOkHttpClientBuilder, buidler);
-            mOkHttpClient = mOkHttpClientBuilder.build();
+            setSslSocketFactory(this.mOkHttpClientBuilder, buidler);
+            this.mOkHttpClient = this.mOkHttpClientBuilder.build();
         }
         //添加下载进度拦截
         DownInfoEntity downInfoEntity = buidler.getDownLoadInfo();
         if(downInfoEntity != null && !TextUtils.isEmpty(downInfoEntity.getSavePath())){
-            addDownLoadInterceptor(mOkHttpClientBuilder,buidler);
+            addDownLoadInterceptor(this.mOkHttpClientBuilder,buidler);
         }
-        return mOkHttpClient;
+        List<BaseInterceptor> interceptors = buidler.getInterceptors();
+        if(interceptors != null && !interceptors.isEmpty()){
+            for (BaseInterceptor interceptor : interceptors) {
+                mOkHttpClientBuilder.addInterceptor(interceptor);
+            }
+        }
+        return this.mOkHttpClient;
     }
 
     /**
      * 设置cookie
-     * @param mBuidler
      */
-    private  JavaNetCookieJar setCookies(HttpEngineImple.Builder mBuidler) {
-        CookieManager cookieManager = new java.net.CookieManager(new InDiskCookieStore(mBuidler.getConext()), CookiePolicy.ACCEPT_ALL);
+    private  JavaNetCookieJar setCookies() {
+        CookieManager cookieManager = new java.net.CookieManager(new InDiskCookieStore(Applications.context()), CookiePolicy.ACCEPT_ALL);
         JavaNetCookieJar javaNetCookieJar =  new JavaNetCookieJar(cookieManager);
         // builder.cookieJar(javaNetCookieJar);
         return javaNetCookieJar;
@@ -110,7 +118,7 @@ public class OkHttpClientUtils {
                 if(TextUtils.isEmpty(certificatePath)){
                     return;
                 }
-                InputStream inputStream = mBuidler.getConext().getApplicationContext().getAssets().open(certificatePath);
+                InputStream inputStream = Applications.context().getAssets().open(certificatePath);
                 if(inputStream==null){
                     return;
                 }

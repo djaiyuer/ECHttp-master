@@ -18,17 +18,16 @@ import okhttp3.Response;
  */
 
 public class NetworkInterceptor implements Interceptor {
-    //句柄
-    private Context mContext;
-    public NetworkInterceptor(Context context){
-        this.mContext = context;
+
+    public NetworkInterceptor(){
+
     }
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
         Response response = chain.proceed(request);
         //网络可用
-        if(NetworkUtils.isNetWorkAvailable(mContext)){
+        if(NetworkUtils.isNetWorkAvailable()){
             int maxAge = 0 * 60;
             response = response.newBuilder()
                     .header("Cache-Control", "public, max-age=" + maxAge)
