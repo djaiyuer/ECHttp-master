@@ -1,7 +1,7 @@
 package com.epet.http.observer;
 
 
-import com.epet.http.OnResultListener;
+import com.epet.http.listener.OnResultListener;
 import com.epet.http.imple.HttpEngineImple;
 import com.epet.http.utils.NetworkUtils;
 

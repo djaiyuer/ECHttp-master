@@ -1,4 +1,4 @@
-package com.epet.http.https;
+package com.epet.http.factory;
 
 
 import java.io.IOException;
@@ -10,7 +10,6 @@ import java.security.cert.CertificateFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
 
 /**
  * 获取证书参数

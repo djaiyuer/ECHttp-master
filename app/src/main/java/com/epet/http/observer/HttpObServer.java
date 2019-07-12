@@ -2,7 +2,7 @@ package com.epet.http.observer;
 
 import android.util.Log;
 
-import com.epet.http.OnResultListener;
+import com.epet.http.listener.OnResultListener;
 import com.epet.http.R;
 import com.epet.http.imple.HttpEngineImple;
 import com.epet.http.utils.Applications;

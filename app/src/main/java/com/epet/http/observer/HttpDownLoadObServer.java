@@ -1,10 +1,8 @@
 package com.epet.http.observer;
 
-import com.epet.http.OnResultListener;
+import com.epet.http.listener.OnResultListener;
 import com.epet.http.bean.DownInfoBean;
 import com.epet.http.imple.HttpEngineImple;
-
-import java.lang.ref.SoftReference;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;

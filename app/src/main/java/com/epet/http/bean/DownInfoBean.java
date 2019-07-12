@@ -1,6 +1,6 @@
 package com.epet.http.bean;
 
-import com.epet.http.abstrac.HttpProgressOnNextListener;
+import com.epet.http.listener.HttpProgressOnNextListener;
 import com.epet.http.config.DownState;
 
 /**

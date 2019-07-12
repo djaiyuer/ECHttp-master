@@ -2,11 +2,11 @@ package com.epet.http.utils.okhttps;
 
 import android.text.TextUtils;
 
-import com.epet.http.OnResultListener;
+import com.epet.http.listener.OnResultListener;
 import com.epet.http.config.HttpFrameConfig;
 import com.epet.http.cookie.InDiskCookieStore;
 import com.epet.http.bean.DownInfoBean;
-import com.epet.http.https.SslSocketFactory;
+import com.epet.http.factory.SslSocketFactory;
 import com.epet.http.imple.HttpEngineImple;
 import com.epet.http.interceptor.BaseInterceptor;
 import com.epet.http.interceptor.CacheInterceptor;

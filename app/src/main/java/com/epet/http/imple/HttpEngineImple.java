@@ -1,10 +1,10 @@
 package com.epet.http.imple;
 
 
-import com.epet.http.OnResultListener;
+import com.epet.http.listener.OnResultListener;
 import com.epet.http.bean.DownInfoBean;
 import com.epet.http.interceptor.BaseInterceptor;
-import com.epet.http.interfase.IHttpEngine;
+import com.epet.http.listener.IHttpEngine;
 
 import java.io.File;
 import java.util.ArrayList;

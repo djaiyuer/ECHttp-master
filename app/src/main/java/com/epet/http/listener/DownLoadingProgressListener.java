@@ -7,5 +7,5 @@ package com.epet.http.listener;
  */
 
 public interface DownLoadingProgressListener {
-    public void onProgress(long writtenBytesCount, long totalBytesCount, boolean isFinish);
+     void onProgress(long writtenBytesCount, long totalBytesCount, boolean isFinish);
 }

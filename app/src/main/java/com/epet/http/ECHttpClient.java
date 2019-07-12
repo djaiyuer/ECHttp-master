@@ -1,10 +1,9 @@
 package com.epet.http;
 
-import android.content.Context;
-
 import com.epet.http.interceptor.BaseInterceptor;
+import com.epet.http.listener.OnResultListener;
 import com.epet.http.utils.IHttpEngineFactory;
-import com.epet.http.interfase.IHttpEngine;
+import com.epet.http.listener.IHttpEngine;
 
 import java.io.File;
 import java.util.ArrayList;

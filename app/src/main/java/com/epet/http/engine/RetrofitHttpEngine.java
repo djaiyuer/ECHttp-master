@@ -5,8 +5,8 @@ import android.util.Log;
 
 import com.epet.http.bean.DownInfoBean;
 import com.epet.http.imple.HttpEngineImple;
-import com.epet.http.interfase.IHttpService;
-import com.epet.http.OnResultListener;
+import com.epet.http.listener.IHttpService;
+import com.epet.http.listener.OnResultListener;
 import com.epet.http.listener.ProgressListener;
 import com.epet.http.body.ProgressRequestBody;
 import com.epet.http.observer.HttpDownLoadObServer;
@@ -80,7 +80,6 @@ public class RetrofitHttpEngine extends HttpEngineImple {
     }
     @Override
     public void download(){
-        final DownInfoBean info = this.mBuidler.getDownLoadInfo();
         HttpDownLoadObServer observer = new HttpDownLoadObServer(this.mBuidler);
         Observable<ResponseBody> observable = this.mIhttpService.download(this.mBuidler.getUrl());
         observable.subscribeOn(Schedulers.io())
@@ -88,6 +87,7 @@ public class RetrofitHttpEngine extends HttpEngineImple {
                 .map(new Function<ResponseBody, DownInfoBean>() {
                     @Override
                     public DownInfoBean apply(ResponseBody responseBody) {
+                        DownInfoBean info = mBuidler.getDownLoadInfo();
                         try {
                             String filePath = info.getSavePath();
                             String fileName = info.getSaveFileName();
@@ -113,13 +113,9 @@ public class RetrofitHttpEngine extends HttpEngineImple {
 
     /**
      * 获取url
-     * 为什么要进行baseUrl和url拼接呢？
-     * 因为为了满足多域名的业务需求，在retrofit的请求方式时设置的@url方式，这样就可以动态配置多域名的业务需求了
      * @return
      */
     private String getUrl(){
-//        StringBuffer sbf = new StringBuffer();
-//        return sbf.append(this.mBuidler.getBaseUrl()).append(this.mBuidler.getUrl()).toString();
        return this.mBuidler.getUrl();
     }
 

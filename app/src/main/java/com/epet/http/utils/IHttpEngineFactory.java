@@ -3,7 +3,7 @@ package com.epet.http.utils;
 import com.epet.http.ECHttpClient;
 import com.epet.http.engine.RetrofitHttpEngine;
 import com.epet.http.imple.HttpEngineImple;
-import com.epet.http.interfase.IHttpEngine;
+import com.epet.http.listener.IHttpEngine;
 
 /**
  * 构建具体的网络框架
