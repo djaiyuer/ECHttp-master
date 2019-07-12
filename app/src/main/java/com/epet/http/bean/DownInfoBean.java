@@ -1,15 +1,14 @@
-package com.epet.http.entity;
+package com.epet.http.bean;
 
 import com.epet.http.abstrac.HttpProgressOnNextListener;
 import com.epet.http.config.DownState;
-import com.epet.http.interfase.IHttpService;
 
 /**
  * 作者：yuer on 2017/8/28 14:17
  * 邮箱：heziyu222@163.com
  */
 
-public class DownInfoEntity {
+public class DownInfoBean {
     //存储位置
     private String savePath;
 

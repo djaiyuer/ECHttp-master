@@ -129,6 +129,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                             @Override
+                            public void onSuccess(String result) {
+                                super.onSuccess(result);
+                                content.setText(result);
+                            }
+
+                            @Override
                             public void onFailure(Object message) {
                                 super.onFailure(message);
                             }
@@ -194,8 +200,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                             @Override
-                            public void downLoadComplate(String filePath) {
-                                super.downLoadComplate(filePath);
+                            public void downLoadComplate(String filePath , String fileName) {
+                                super.downLoadComplate(filePath , fileName);
                                 download.setText("DOWNLOAD  存储位置"+filePath);
                             }
 

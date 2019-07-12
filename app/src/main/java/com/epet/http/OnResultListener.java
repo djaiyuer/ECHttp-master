@@ -100,9 +100,10 @@ public abstract class OnResultListener<T> {
 
     /**
      * 下载完成
-     * @param filePath
+     * @param filePath 下载文件保存地址
+     * @param fileName 下载文件保存名
      */
-    public void downLoadComplate(String filePath){
+    public void downLoadComplate(String filePath , String fileName){
 
     }
 

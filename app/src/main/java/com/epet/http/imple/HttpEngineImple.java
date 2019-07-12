@@ -2,8 +2,7 @@ package com.epet.http.imple;
 
 
 import com.epet.http.OnResultListener;
-import com.epet.http.engine.RetrofitHttpEngine;
-import com.epet.http.entity.DownInfoEntity;
+import com.epet.http.bean.DownInfoBean;
 import com.epet.http.interceptor.BaseInterceptor;
 import com.epet.http.interfase.IHttpEngine;
 
@@ -78,7 +77,7 @@ public class HttpEngineImple implements IHttpEngine {
          * 请求回执接口
          */
         private OnResultListener mListener;
-        private DownInfoEntity mDownLoadInfo;
+        private DownInfoBean mDownLoadInfo;
         private List<BaseInterceptor> mInterceptors;
         public HttpEngineImple.Builder setBaseUrl(String baseUrl) {
             this.mBaseUrl = baseUrl;
@@ -167,13 +166,13 @@ public class HttpEngineImple implements IHttpEngine {
             return mFileKey;
         }
 
-        public DownInfoEntity getDownLoadInfo() {
+        public DownInfoBean getDownLoadInfo() {
             return mDownLoadInfo;
         }
 
         private void createDownInfoEntity(){
             if(this.mDownLoadInfo==null){
-                this.mDownLoadInfo = new DownInfoEntity();
+                this.mDownLoadInfo = new DownInfoBean();
             }
         }
         public IHttpEngine builder() {

@@ -3,7 +3,7 @@ package com.epet.http.engine;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.epet.http.entity.DownInfoEntity;
+import com.epet.http.bean.DownInfoBean;
 import com.epet.http.imple.HttpEngineImple;
 import com.epet.http.interfase.IHttpService;
 import com.epet.http.OnResultListener;
@@ -80,14 +80,14 @@ public class RetrofitHttpEngine extends HttpEngineImple {
     }
     @Override
     public void download(){
-        final DownInfoEntity info = this.mBuidler.getDownLoadInfo();
+        final DownInfoBean info = this.mBuidler.getDownLoadInfo();
         HttpDownLoadObServer observer = new HttpDownLoadObServer(this.mBuidler);
         Observable<ResponseBody> observable = this.mIhttpService.download(this.mBuidler.getUrl());
         observable.subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
-                .map(new Function<ResponseBody, DownInfoEntity>() {
+                .map(new Function<ResponseBody, DownInfoBean>() {
                     @Override
-                    public DownInfoEntity apply(ResponseBody responseBody) {
+                    public DownInfoBean apply(ResponseBody responseBody) {
                         try {
                             String filePath = info.getSavePath();
                             String fileName = info.getSaveFileName();
@@ -172,7 +172,7 @@ public class RetrofitHttpEngine extends HttpEngineImple {
      * @param info
      * @throws IOException
      */
-    public void writeCache(ResponseBody responseBody,File file,DownInfoEntity info) {
+    public void writeCache(ResponseBody responseBody, File file, DownInfoBean info) {
         try {
             RandomAccessFile randomAccessFile = null;
             FileChannel channelOut = null;

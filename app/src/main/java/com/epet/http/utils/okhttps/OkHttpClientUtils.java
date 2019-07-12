@@ -5,7 +5,7 @@ import android.text.TextUtils;
 import com.epet.http.OnResultListener;
 import com.epet.http.config.HttpFrameConfig;
 import com.epet.http.cookie.InDiskCookieStore;
-import com.epet.http.entity.DownInfoEntity;
+import com.epet.http.bean.DownInfoBean;
 import com.epet.http.https.SslSocketFactory;
 import com.epet.http.imple.HttpEngineImple;
 import com.epet.http.interceptor.BaseInterceptor;
@@ -80,7 +80,7 @@ public class OkHttpClientUtils {
         }
         boolean isDownload = false;
         //添加下载进度拦截
-        DownInfoEntity downInfoEntity = buidler.getDownLoadInfo();
+        DownInfoBean downInfoEntity = buidler.getDownLoadInfo();
         if(downInfoEntity != null && !TextUtils.isEmpty(downInfoEntity.getSaveFileName())){
             isDownload = true;
             addDownLoadInterceptor(this.mOkHttpClientBuilder,buidler);
@@ -151,7 +151,7 @@ public class OkHttpClientUtils {
         final DownloadInterceptor downloadInterceptor =  new DownloadInterceptor(new DownLoadingProgressListener() {
             @Override
             public void onProgress(long writtenBytesCount, long totalBytesCount, boolean isFinish) {
-                DownInfoEntity downInfo = buidler.getDownLoadInfo();
+                DownInfoBean downInfo = buidler.getDownLoadInfo();
                 if(downInfo.getTotalLength() > writtenBytesCount){
                     writtenBytesCount = downInfo.getTotalLength() - totalBytesCount + writtenBytesCount;
                 }else{
@@ -163,7 +163,7 @@ public class OkHttpClientUtils {
                     return;
                 }
                 if(isFinish){
-                    listener.downLoadComplate(buidler.getDownLoadInfo().getSavePath() + buidler.getDownLoadInfo().getSaveFileName());
+                    listener.downLoadComplate(buidler.getDownLoadInfo().getSavePath() + buidler.getDownLoadInfo().getSaveFileName() , buidler.getDownLoadInfo().getSaveFileName());
                 }else{
                     listener.downLoadProgress(writtenBytesCount,totalBytesCount);
                 }
