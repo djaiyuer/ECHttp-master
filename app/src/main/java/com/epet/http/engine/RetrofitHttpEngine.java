@@ -82,7 +82,7 @@ public class RetrofitHttpEngine extends HttpEngineImple {
     public void download(){
         final DownInfoEntity info = this.mBuidler.getDownLoadInfo();
         HttpDownLoadObServer observer = new HttpDownLoadObServer(this.mBuidler);
-        Observable<ResponseBody>  observable = this.mIhttpService.download(getUrl());
+        Observable<ResponseBody> observable = this.mIhttpService.download(this.mBuidler.getUrl());
         observable.subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .map(new Function<ResponseBody, DownInfoEntity>() {
@@ -118,8 +118,9 @@ public class RetrofitHttpEngine extends HttpEngineImple {
      * @return
      */
     private String getUrl(){
-        StringBuffer sbf = new StringBuffer();
-        return sbf.append(this.mBuidler.getBaseUrl()).append(this.mBuidler.getUrl()).toString();
+//        StringBuffer sbf = new StringBuffer();
+//        return sbf.append(this.mBuidler.getBaseUrl()).append(this.mBuidler.getUrl()).toString();
+       return this.mBuidler.getUrl();
     }
 
     /**

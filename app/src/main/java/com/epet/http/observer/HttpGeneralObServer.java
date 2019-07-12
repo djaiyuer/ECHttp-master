@@ -51,6 +51,7 @@ public class HttpGeneralObServer implements Observer<ResponseBody> {
             try {
                 if(!NetworkUtils.isNetWorkAvailable()){
                     this.mListener.onCache(value);
+                    this.mListener.onCache(value.string().toString());
                 }else{
                     this.mListener.onSuccess(value);
                     this.mListener.onSuccess(value.string().toString());

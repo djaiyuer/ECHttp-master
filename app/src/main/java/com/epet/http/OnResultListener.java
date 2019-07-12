@@ -47,7 +47,13 @@ public abstract class OnResultListener<T> {
 
     }
 
+    /**
+     * 成功回执-緩存
+     * @param result 字符串
+     */
+    public void onCache(String result){
 
+    }
     /**
      * 失败回执
      * @param message

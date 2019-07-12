@@ -11,6 +11,7 @@ import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -54,7 +55,8 @@ public interface IHttpService {
      * @param url
      * @return
      */
+
     @Streaming /*大文件需要加入这个判断，防止下载过程中写入到内存中*/
-    @POST
+    @GET
     Observable<ResponseBody> download(@Url String url);
 }

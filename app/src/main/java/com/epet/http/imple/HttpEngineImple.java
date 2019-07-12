@@ -20,9 +20,6 @@ import java.util.List;
 public class HttpEngineImple implements IHttpEngine {
     public HttpEngineImple.Builder mBuidler;
 
-    public HttpEngineImple(){
-
-    }
     public HttpEngineImple(HttpEngineImple.Builder builder) {
         this.mBuidler = builder;
     }
@@ -136,7 +133,9 @@ public class HttpEngineImple implements IHttpEngine {
             if(this.mInterceptors == null){
                 this.mInterceptors = new ArrayList<>();
             }
-            this.mInterceptors.addAll(interceptors);
+            if(interceptors != null && !interceptors.isEmpty()){
+                this.mInterceptors.addAll(interceptors);
+            }
             return this;
         }
 
@@ -177,12 +176,8 @@ public class HttpEngineImple implements IHttpEngine {
                 this.mDownLoadInfo = new DownInfoEntity();
             }
         }
-
-        /**
-         * 这里动态返回子类对象进行框架的切换
-         */
-        public HttpEngineImple builder() {
-            return new RetrofitHttpEngine(this);
+        public IHttpEngine builder() {
+            return new HttpEngineImple(this);
         }
     }
 }

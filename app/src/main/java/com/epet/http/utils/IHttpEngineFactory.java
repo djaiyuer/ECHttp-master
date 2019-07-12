@@ -2,6 +2,7 @@ package com.epet.http.utils;
 
 import com.epet.http.ECHttpClient;
 import com.epet.http.engine.RetrofitHttpEngine;
+import com.epet.http.imple.HttpEngineImple;
 import com.epet.http.interfase.IHttpEngine;
 
 /**
@@ -17,16 +18,11 @@ public class IHttpEngineFactory {
      * @return
      */
     public static IHttpEngine createHttpEngine(ECHttpClient.Builder builder){
-        return  retrofitHttpFrame(builder);
+        return new RetrofitHttpEngine(createHttpBuilder(builder));
     }
 
-    /**
-     * Retrofit框架的生产方法
-     * @param builder
-     * @return
-     */
-    private static IHttpEngine retrofitHttpFrame(ECHttpClient.Builder builder){
-        IHttpEngine httpEngine= new RetrofitHttpEngine.Builder()
+    private static HttpEngineImple.Builder createHttpBuilder(ECHttpClient.Builder builder){
+        HttpEngineImple.Builder httpBuilder =  new HttpEngineImple.Builder()
                 .setBaseUrl(builder.getBaseUrl())
                 .setUrl(builder.getUrl())
                 .setParam(builder.getParams())
@@ -35,8 +31,7 @@ public class IHttpEngineFactory {
                 .setSaveFilePath(builder.getSaveFilePath())
                 .setSaveFileName(builder.getSaveFileName())
                 .setOnResultListener(builder.getListener())
-                .addInterceptors(builder.getInterceptors())
-                .builder();
-        return httpEngine;
+                .addInterceptors(builder.getInterceptors());
+        return  httpBuilder;
     }
 }

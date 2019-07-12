@@ -12,6 +12,7 @@ import com.epet.http.interceptor.BaseInterceptor;
 import com.epet.http.interceptor.CacheInterceptor;
 import com.epet.http.interceptor.DownloadInterceptor;
 import com.epet.http.interceptor.LoggingInterceptor;
+import com.epet.http.interceptor.RetryInterceptor;
 import com.epet.http.listener.DownLoadingProgressListener;
 import com.epet.http.interceptor.NetworkInterceptor;
 import com.epet.http.utils.Applications;
@@ -27,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
-import okhttp3.internal.http.BridgeInterceptor;
 
 /**
  * okhttp帮助类
@@ -56,7 +56,7 @@ public class OkHttpClientUtils {
             //自定义OkHttpClient
             this.mOkHttpClientBuilder = new OkHttpClient.Builder()
                     //失败重连
-                    .retryOnConnectionFailure(false)
+                    .retryOnConnectionFailure(true)
                     //超时时间
                     .connectTimeout(HttpFrameConfig.TIMEOUT_CONNECTION, TimeUnit.SECONDS)
                     //读取时间
@@ -71,26 +71,31 @@ public class OkHttpClientUtils {
                     .addNetworkInterceptor(new NetworkInterceptor())
                     //chrome工具调试的中间件
                     .addNetworkInterceptor(new StethoInterceptor());
-            // https支持
-            this.mOkHttpClientBuilder.addInterceptor(new BridgeInterceptor(setCookies()));
+            this.mOkHttpClientBuilder.addInterceptor(new RetryInterceptor.Builder().retryCount(3).retryInterval(5000).build());
             //日志拦截
             addLoggingInterceptor(this.mOkHttpClientBuilder);
-            //同步cookie
-            //setCookies(okHttpClient, mBuidler);
             //设置证书
             setSslSocketFactory(this.mOkHttpClientBuilder, buidler);
             this.mOkHttpClient = this.mOkHttpClientBuilder.build();
         }
+        boolean isDownload = false;
         //添加下载进度拦截
         DownInfoEntity downInfoEntity = buidler.getDownLoadInfo();
-        if(downInfoEntity != null && !TextUtils.isEmpty(downInfoEntity.getSavePath())){
+        if(downInfoEntity != null && !TextUtils.isEmpty(downInfoEntity.getSaveFileName())){
+            isDownload = true;
             addDownLoadInterceptor(this.mOkHttpClientBuilder,buidler);
         }
+
+        boolean isAddInterceptor = false;
         List<BaseInterceptor> interceptors = buidler.getInterceptors();
         if(interceptors != null && !interceptors.isEmpty()){
+            isAddInterceptor = true;
             for (BaseInterceptor interceptor : interceptors) {
                 mOkHttpClientBuilder.addInterceptor(interceptor);
             }
+        }
+        if(isDownload || isAddInterceptor){
+            this.mOkHttpClient = this.mOkHttpClientBuilder.build();
         }
         return this.mOkHttpClient;
     }
@@ -142,8 +147,8 @@ public class OkHttpClientUtils {
      * @param okHttpClient
      * @param buidler
      */
-    private void addDownLoadInterceptor(OkHttpClient.Builder okHttpClient,final HttpEngineImple.Builder buidler){
-        okHttpClient.addNetworkInterceptor(new DownloadInterceptor(new DownLoadingProgressListener() {
+    private void addDownLoadInterceptor(final OkHttpClient.Builder okHttpClient,final HttpEngineImple.Builder buidler){
+        final DownloadInterceptor downloadInterceptor =  new DownloadInterceptor(new DownLoadingProgressListener() {
             @Override
             public void onProgress(long writtenBytesCount, long totalBytesCount, boolean isFinish) {
                 DownInfoEntity downInfo = buidler.getDownLoadInfo();
@@ -163,7 +168,8 @@ public class OkHttpClientUtils {
                     listener.downLoadProgress(writtenBytesCount,totalBytesCount);
                 }
             }
-        }));
+        });
+        okHttpClient.addNetworkInterceptor(downloadInterceptor);
     }
 
     private static class InstanceHolder{
